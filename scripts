@@ -7,3 +7,53 @@ for branch in $(git branch -r | grep -v '\->'); do
     size=$(git rev-list --all | git cat-file --batch-check="%(objectsize:disk)" | awk '{sum += $1} END {print sum}')
     echo "Branch: ${branch#origin/}, Size: $(numfmt --to=iec $size)"
 done
+
+
+
+
+#!/bin/bash
+
+# Define the source repository and the target repository directory
+SOURCE_DIR="/path/to/your/source/repo"
+TARGET_DIR="/path/to/your/new/repo"
+
+# Create a new empty Git repository (if it doesn't exist)
+if [ ! -d "$TARGET_DIR" ]; then
+  mkdir -p "$TARGET_DIR"
+  cd "$TARGET_DIR"
+  git init
+else
+  echo "Target repository already exists: $TARGET_DIR"
+fi
+
+# Move to the source repository
+cd "$SOURCE_DIR" || { echo "Source directory not found!"; exit 1; }
+
+# Fetch all branches and get the list of branches
+git fetch --all
+branches=$(git branch -r | grep -v '\->')
+
+# Loop through each branch
+for branch in $branches; do
+  # Checkout the branch in the source repository
+  git checkout "$branch" || { echo "Failed to checkout branch $branch"; continue; }
+
+  # Get the branch name (strip "origin/" prefix)
+  branch_name=$(echo $branch | sed 's/origin\///')
+
+  # Copy the entire repository content to the new directory under a new folder for each branch
+  echo "Copying branch '$branch_name' to $TARGET_DIR/$branch_name"
+  mkdir -p "$TARGET_DIR/$branch_name"
+  cp -r ./* "$TARGET_DIR/$branch_name/"
+
+  # Initialize the new branch in the target directory and commit the changes
+  cd "$TARGET_DIR/$branch_name"
+  git add .
+  git commit -m "Initial commit for branch $branch_name"
+  git checkout master  # Checkout to master (or main) branch after each copy
+
+  # Move back to the source directory for the next branch
+  cd "$SOURCE_DIR"
+done
+
+echo "All branches have been copied successfully."
