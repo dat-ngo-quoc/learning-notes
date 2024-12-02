@@ -1,2 +1,9 @@
 find . -type f -name "*.sh" -exec sed -i 's/\r$//' {} +
 
+
+echo "Calculating packed size for branches..."
+for branch in $(git branch -r | grep -v '\->'); do
+    git checkout --quiet "${branch#origin/}" || continue
+    size=$(git rev-list --all | git cat-file --batch-check="%(objectsize:disk)" | awk '{sum += $1} END {print sum}')
+    echo "Branch: ${branch#origin/}, Size: $(numfmt --to=iec $size)"
+done
