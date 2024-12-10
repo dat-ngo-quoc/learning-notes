@@ -14,3 +14,5 @@ curl -X POST "http://opensearch.local:9200/_bulk" \
 { "index": { "_index": "app-logs", "_id": "2" } }
 { "timestamp": "2024-12-10T12:35:01Z", "level": "ERROR", "message": "Database connection failed", "db": "orders" }
 '
+ HTTP_User       your-username  # If basic authentication is needed
+    HTTP_Passwd     your-password
