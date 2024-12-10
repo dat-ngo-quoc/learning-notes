@@ -4,3 +4,13 @@
     Regex       ^(?<timestamp>[^\s]+ [^\s]+) (?<level>[A-Z]+) (?<message>.+)$
     Time_Key    timestamp
     Time_Format %Y-%m-%d %H:%M:%S
+
+
+curl -X POST "http://opensearch.local:9200/_bulk" \
+-H "Content-Type: application/json" \
+-d '
+{ "index": { "_index": "app-logs", "_id": "1" } }
+{ "timestamp": "2024-12-10T12:34:56Z", "level": "INFO", "message": "User logged in", "user_id": 1234 }
+{ "index": { "_index": "app-logs", "_id": "2" } }
+{ "timestamp": "2024-12-10T12:35:01Z", "level": "ERROR", "message": "Database connection failed", "db": "orders" }
+'
