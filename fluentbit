@@ -1,6 +1,6 @@
 [PARSER]
     Name        custom_text
     Format      regex
-    Regex       ^(?<timestamp>[^\s]+ [^\s]+) (?<level>[A-Z]+) (?<action>[a-zA-Z]+)=(?<value>[^\s]+) (?<details>.+)$
+    Regex       ^(?<timestamp>[^\s]+ [^\s]+) (?<level>[A-Z]+) (?<message>.+)$
     Time_Key    timestamp
     Time_Format %Y-%m-%d %H:%M:%S
