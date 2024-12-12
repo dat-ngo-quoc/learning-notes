@@ -51,3 +51,12 @@ curl -X POST "http://opensearch.local:9200/_bulk" \
     Name        parser
     Match       java.log
     Parser      java_log
+
+
+
+[MULTILINE_PARSER]
+    Name          java_multiline
+    Type          regex
+    Flush_Timeout 5
+    Rule          first_line ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}
+    Rule          next_line ^(\s+|$)
