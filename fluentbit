@@ -24,3 +24,30 @@ curl -X POST "http://opensearch.local:9200/_bulk" \
     Regex        ^(?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\s+(?<level>\w+)\s+\[(?<applicationName>[^,]*),(?<traceId>[^,]*),(?<spanId>[^\]]*)\]\s+(?<pid>\d+)\s+—\s+\[(?<thread>[^\]]+)\]\s+(?<logger>[\w\.\$]{1,40})\s+(?<message>.*)$
     Time_Key     timestamp
     Time_Format  %Y-%m-%d %H:%M:%S.%L
+###########################################################################
+
+[PARSER]
+    Name          java_multiline
+    Format        regex
+    Regex_Parser  multiline_java
+
+[MULTILINE_PARSER]
+    Name          multiline_java
+    Type          regex
+    Flush_Timeout 1000
+    Rule_1        "start_state"    "/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/"   "cont"
+    Rule_2        "cont"           "/^(?!\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}).*/" "cont"
+
+
+[PARSER]
+    Name         java_log
+    Format       regex
+    Regex        ^(?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\s+(?<level>\w+)\s+\[(?<applicationName>[^,]*),(?<traceId>[^,]*),(?<spanId>[^\]]*)\]\s+(?<pid>\d+)\s+---\s+\[(?<thread>[^\]]+)\]\s+(?<logger>[\w\.\$]{1,40})\s+:\s+(?<message>.*)$
+    Time_Key     timestamp
+    Time_Format  %Y-%m-%d %H:%M:%S.%L
+
+
+[FILTER]
+    Name        parser
+    Match       java.log
+    Parser      java_log
