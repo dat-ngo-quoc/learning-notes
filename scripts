@@ -57,3 +57,23 @@ for branch in $branches; do
 done
 
 echo "All branches have been copied successfully."
+
+
+- name: Verify all Docker containers are healthy
+  hosts: your_target_host
+  become: yes
+  tasks:
+    - name: Get all containers status
+      command: docker ps --format "{{ '{{' }}.ID{{ '}}' }} {{ '{{' }}.Names{{ '}}' }} {{ '{{' }}.Status{{ '}}' }}"
+      register: container_status
+
+    - name: Show container status
+      debug:
+        msg: "{{ container_status.stdout_lines }}"
+
+    - name: Check unhealthy containers
+      fail:
+        msg: "Some containers are unhealthy: {{ unhealthy_containers }}"
+      vars:
+        unhealthy_containers: "{{ container_status.stdout_lines | select('search', 'unhealthy') | list }}"
+      when: unhealthy_containers | length > 0
