@@ -82,3 +82,7 @@ echo "All branches have been copied successfully."
       vars:
         unhealthy_containers: "{{ container_status.stdout_lines | select('search', 'unhealthy') | list }}"
       when: unhealthy_containers | length > 0
+
+
+docker compose ps --services | grep -v -E "(container1|container2)" | xargs docker compose restart
+
