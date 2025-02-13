@@ -29,6 +29,11 @@ fi
 # Move to the source repository
 cd "$SOURCE_DIR" || { echo "Source directory not found!"; exit 1; }
 
+
+
+docker compose ps --services | grep -v -E "(container1|container2)" | xargs docker compose restart
+
+
 # Fetch all branches and get the list of branches
 git fetch --all
 branches=$(git branch -r | grep -v '\->')
