@@ -1,3 +1,6 @@
+label_replace(container_last_seen, "instance", "$1", "instance", "(.+)") * on(instance) group_left() up
+
+
 find . -type f -name "*.sh" -exec sed -i 's/\r$//' {} +
 
 
